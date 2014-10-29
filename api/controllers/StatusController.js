@@ -26,12 +26,25 @@ var day_dates = ["2014-03-28T05:43:00+00:00","2014-03-28T06:43:00+00:00","2014-0
 var day_values = ["20.70","20.00","19.20","19.80","19.90","20.10","21.40","23.00","27.40","28.70","27.50","29.30","28.50","27.20","28.60","28.70","25.90","23.40","22.40","21.40","19.80","19.50","20.00"];
 var index = 0;
 
+var temp_values = [];
+
+
+var randomizeData = function(){
+    var newVal = Math.random() *15 + 15 // generate nuber between 15-30
+
+    temp_values.append(newVal.toString());
+}
+
+
+
 var sendData = function(){
     var day_dates_slice = day_dates.slice(0, index);
-    var day_values_slice = day_values.slice(0, index);
+    //var day_values_slice = day_values.slice(0, index);
+    randomizeData();
 
     data.day_dates = day_dates_slice;
-    data.day_values = day_values_slice;
+    //data.day_values = day_values_slice;
+    data.day_values = temp_values;
 
     request({
         url: "https://private-39405-statusio.apiary-proxy.com/v2/metric/update",
