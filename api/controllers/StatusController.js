@@ -1,7 +1,7 @@
 var request = require("request");
 
-var api_id = "eff86855-92d3-4a59-8ff0-8716d4defb41";
-var api_key = "LPjufCBzdKtkhX2IQw4oYLNzbEy4i2REvfpG/KpSqMwQGUYdkqUKxo8l/63clWVhcOzcN8TKeWtpVC/eUI6vYg==";
+var api_id = process.env.STATUS_IO_API_ID;
+var api_key = process.env.STATUS_IO_API_KEY;
 var status = "544e810996cc7fe45400896c";
 var metric = "544e86d396cc7fe4540089f2";
 
