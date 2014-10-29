@@ -11,8 +11,8 @@ var data = {
     "metric_id":  "544e86d396cc7fe4540089f2",
     "day_avg": "22.58",
     "day_start": "1395981878000",
-    "day_dates": ["2014-03-28T05:43:00+00:00","2014-03-28T06:43:00+00:00","2014-03-28T07:43:00+00:00","2014-03-28T08:43:00+00:00","2014-03-28T09:43:00+00:00","2014-03-28T10:43:00+00:00","2014-03-28T11:43:00+00:00","2014-03-28T12:43:00+00:00","2014-03-28T13:43:00+00:00","2014-03-28T14:43:00+00:00","2014-03-28T15:43:00+00:00","2014-03-28T16:43:00+00:00","2014-03-28T17:43:00+00:00","2014-03-28T18:43:00+00:00","2014-03-28T19:43:00+00:00","2014-03-28T20:43:00+00:00","2014-03-28T21:43:00+00:00","2014-03-28T22:43:00+00:00","2014-03-28T23:43:00+00:00","2014-03-29T00:43:00+00:00","2014-03-29T01:43:00+00:00","2014-03-29T02:43:00+00:00","2014-03-29T03:43:00+00:00"],
-    "day_values": ["20.70","20.00","19.20","19.80","19.90","20.10","21.40","23.00","27.40","28.70","27.50","29.30","28.50","27.20","28.60","28.70","25.90","23.40","22.40","21.40","19.80","19.50","20.00"],
+    "day_dates": [],
+    "day_values": [],
     "week_avg": "20.07",
     "week_start": "1395463478000",
     "week_dates": ["2014-03-22T04:43:00+00:00","2014-03-23T04:43:00+00:00","2014-03-24T04:43:00+00:00","2014-03-25T04:43:00+00:00","2014-03-26T04:43:00+00:00","2014-03-27T04:43:00+00:00","2014-03-28T04:43:00+00:00"],
@@ -32,18 +32,31 @@ var time_values = [];
 
 
 var randomizeData = function(){
-    var newVal = Math.random() *15 + 15 // generate nuber between 15-30
+    var newVal;// generate nuber between 15-30
+    var timestamp = moment().utc();
+    var yesterday = moment().utc().subtract(24, 'hour');
 
-    temp_values.push(newVal.toString());
+    data.day_start = yesterday.unix()*1000;
 
-    time_values.push(moment().format());
+    temp_values.push((Math.random() *15 + 15).toString());
+    time_values.push(timestamp);
+
+    for(var i = 0; i < 23; i++){
+        newVal = Math.random() *15 + 15 ;// generate nuber between 15-30
+        timestamp.subtract(1, 'hour').format();
+
+        temp_values.push(newVal.toString());
+        time_values.push(timestamp);
+    }
+
+
 
 }
 
 
 
 var sendData = function(){
-    var day_dates_slice = day_dates.slice(0, index);
+    //var day_dates_slice = day_dates.slice(0, index);
     //var day_values_slice = day_values.slice(0, index);
     randomizeData();
 
@@ -65,7 +78,7 @@ var sendData = function(){
 
         index++;
         //if(index < day_dates.length) {
-            setTimeout(sendData, 1000);
+            //setTimeout(sendData, 1000);
         //}
     });
 }
