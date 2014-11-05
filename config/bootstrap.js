@@ -10,7 +10,7 @@
  */
 
 module.exports.bootstrap = function(cb) {
-    watcher3.watch("https://atmo.iplantcollaborative.org");
+    watcher4.watch("https://atmo.iplantcollaborative.org", 5000);
         // add polling interval param
 
   // It's very important to trigger this callback method when you are finished
