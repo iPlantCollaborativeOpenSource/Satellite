@@ -20,6 +20,8 @@ var check = function(url, poll, cb){
 
         //saved to DB :)
         StatusResult.create({url: url, status:response.statusCode}).exec(function createCB(err,created){
+            // TODO: save info with url as key (or nickname as key)
+            // this is to manage multiple services
             console.log(created);
         })
 
