@@ -59,6 +59,8 @@ var sendData = function(){
         headers: {"x-api-id": api_id, "x-api-key": api_key, "Content-Type": "application/json"},
         method: "POST"
     }, function (error, response, body) {
+
+
         console.log("Status", response.statusCode);
         console.log("Headers", JSON.stringify(response.headers));
         console.log("Response received", body);
