@@ -5,6 +5,8 @@ var moment = require("moment");
 
 
 var check = function(url, poll, cb){
+    //var start = moment();
+
     request({
         url: url,
         method: "GET"

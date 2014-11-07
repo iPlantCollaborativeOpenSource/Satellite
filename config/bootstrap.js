@@ -10,11 +10,13 @@
  */
 
 module.exports.bootstrap = function(cb) {
-    watcher4.watch("https://atmo.iplantcollaborative.org", 2000);
-        // add polling interval param
+    //watcher4.watch("http://atmobeta.iplantc.org", 5000);
+    watcher5.watch("https://atmo.iplantcollaborative.org", 5000);
+    //aggregator.aggregate("https://atmo.iplantcollaborative.org");
 
-    // call reporting service every hour
 
+    //TODO call reporting service every hour
+    setTimeout(aggregator.aggregate(), 10000);
 
   // It's very important to trigger this callback method when you are finished
   // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
