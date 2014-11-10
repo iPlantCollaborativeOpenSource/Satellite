@@ -2,7 +2,7 @@ var request = require("request");
 var moment = require("moment");
 
 var start;
-
+var sender;
 
 // TODO set up day data
 // iterate through DB for all data up to 1 day ago
@@ -10,13 +10,17 @@ var start;
     var updateData = function(cb){
         var total = [];
 
+        var _date = new Date(start.clone().subtract(1, "hour").format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z');
         StatusResult.count({
             //created less than an hour ago
-            createdAt: {'>=': startclone.subtract(1, "hour")}
+            //TODO
+            createdAt: {'>=': _date}
+            //
         }).exec(function countCB(error, found){
             total = found;
         });
 
+       total.toString();
         // TODO get hourly info
 
         takeHour(total);
@@ -34,7 +38,7 @@ var start;
 
         cb(true);
 
-
+        setTimeout(updateData.bind(null, function(){}), 20000);
     }
 // TODO narrow down and count how many were 200
 
@@ -52,10 +56,11 @@ var takeHour = function(array){
 }
 
 var setDay = function(){
-    //var day = sender.day_values;
-    var startDate = start.clone().utc().subtract(24, 'hour');
+    var day = sender.day_values;
+    var startDate = start.clone().subtract(24, 'hour').utc().format();
     sender.day_start = startDate;
 
+    // TODO sender Myseriously turns into a string
     if (sender.day_values.length === 24) {
         sender.day_dates.shift();
         sender.day_values.shift();
@@ -64,13 +69,13 @@ var setDay = function(){
     sender.day_dates.push(start.utc().format());
 }
 
-
+//"month_dates": ["2014-02-28T04:43:00+00:00",
 
 // TODO set up week data
 
     var setWeek = function(){
         var day = sender.day_values;
-        var startDate = start.clone().utc().subtract(7, 'day');
+        var startDate = start.clone().subtract(7, 'day').utc().format();
         sender.week_start = startDate;
 
         if (sender.week_values.length === 7) {
@@ -84,7 +89,7 @@ var setDay = function(){
 // TODO set up month data
     var setMonth = function(){
         var day = sender.day_values;
-        var startDate = start.clone().utc().subtract(30, 'day');
+        var startDate = start.clone().subtract(30, 'day').utc().format();
         sender.month_start = startDate;
 
         if (sender.month_values.length === 30) {
@@ -98,21 +103,28 @@ var setDay = function(){
 // calculate any average given an aray
 
     var average = function(array, total){ //takes a slice
+        var avg;
         var length = array.length;
         var sum = 0;
-        for( var i ; i < length; i++){
-            sum += array[i];
+
+        if(length === 0){
+            avg = 0;
         }
-        var avg =  sum/length;
+        else {
+            for (var i; i < length; i++) {
+                sum += array[i];
+            }
+            avg = sum / length;
+        }
 
         switch(total){
-            case 24: sender[day_avg].set(avg);
+            case 24: sender.day_avg= avg;
                 return avg;
 
-            case 7: sender[week_avg].set(avg);
+            case 7: sender.week_avg=avg;
                 return avg;
 
-            case 30: sender[month_avg].set(avg);
+            case 30: sender.month_avg=avg;
                 return avg;
         }
     }
@@ -121,7 +133,8 @@ var setDay = function(){
 module.exports = {
     aggregate: function() {
 
-        var sender = {
+
+        sender = {
             day_avg: "",
             day_start: "",
             day_dates: [],
