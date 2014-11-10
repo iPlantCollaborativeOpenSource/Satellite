@@ -3,88 +3,147 @@ var moment = require("moment");
 
 var start;
 
+
 // TODO set up day data
 // iterate through DB for all data up to 1 day ago
 
     var updateData = function(cb){
-        var total;
-        //check for updtime by searching for any non-200 pings
+        var total = [];
+
         StatusResult.count({
-            status: 200
+            //created less than an hour ago
+            createdAt: {'>=': startclone.subtract(1, "hour")}
         }).exec(function countCB(error, found){
-            console.log("I found this many 200's: ");
-            console.log(found);
+            total = found;
         });
 
-        // TODO make a call for all records in the last month,
-        // TODO narrow down and count how many were 200
-        // TODO make an array slice, send it to be averaged
+        // TODO get hourly info
 
-//        StatusResult.count({
-//            status: { '!' : ['200'] }
-//        });
-        StatusResult.find(
-            //find month/week/day
-        ).exec(function countCB(error, found){
-            total = found.length;
+        takeHour(total);
 
-        });
+        //TODO Update Weekly and Monthly every day
+
+        setDay();
+        if(sender.day_values.length === 24){
+            setWeek();
+            setMonth();
+        }
+
+        // TODO update Timestamp array
 
 
         cb(true);
 
-        // TODO call every hour
-        setTimeout(updateData.bind(null,function(){}), 10000);
 
     }
+// TODO narrow down and count how many were 200
 
+
+var takeHour = function(array){
+    var other = 0;
+    array.forEach(function(element, index, arr){
+        if( element.status !== 200){
+            other++;
+        }
+        var uptime = ( array.length - other)/array.length;
+        sender.day_values.push(uptime);
+    })
+
+}
+
+var setDay = function(){
+    //var day = sender.day_values;
+    var startDate = start.clone().utc().subtract(24, 'hour');
+    sender.day_start = startDate;
+
+    if (sender.day_values.length === 24) {
+        sender.day_dates.shift();
+        sender.day_values.shift();
+    }
+    sender.day_values.push(average(day,24));
+    sender.day_dates.push(start.utc().format());
+}
 
 
 
 // TODO set up week data
+
+    var setWeek = function(){
+        var day = sender.day_values;
+        var startDate = start.clone().utc().subtract(7, 'day');
+        sender.week_start = startDate;
+
+        if (sender.week_values.length === 7) {
+            sender.week_values.shift();
+            sender.week_dates.shift();
+        }
+        sender.week_values.push(average(day, 7));
+        sender.week_dates.push(start.utc().format());
+    }
+
 // TODO set up month data
+    var setMonth = function(){
+        var day = sender.day_values;
+        var startDate = start.clone().utc().subtract(30, 'day');
+        sender.month_start = startDate;
 
-// TODO calculate any average
+        if (sender.month_values.length === 30) {
+            sender.month_values.shift();
+            sender.month_dates.shift();
+        }
+        sender.month_values.push(average(day, 30));
+        sender.month_dates.push(start.utc().format());
+    }
 
+// calculate any average given an aray
 
-    var average = function(array){ //takes a slice
+    var average = function(array, total){ //takes a slice
         var length = array.length;
-        var sum;
+        var sum = 0;
         for( var i ; i < length; i++){
             sum += array[i];
         }
         var avg =  sum/length;
 
-        switch(length){
-            case 24: Sender[day_avg].set(avg);
-                break;
-            case 7: Sender[week_avg].set(avg);
-                break;
-            case 30: Sender[month_avg].set(avg);
-                break;
+        switch(total){
+            case 24: sender[day_avg].set(avg);
+                return avg;
+
+            case 7: sender[week_avg].set(avg);
+                return avg;
+
+            case 30: sender[month_avg].set(avg);
+                return avg;
         }
-
     }
-
-
-/*  "day_avg": "22.58",
-    "day_start": "",
-    "day_dates": [],
-    "day_values": [],
-    "week_avg": "20.07",
-    "week_start": "",
-    "week_dates": [],
-    "week_values": [],
-    "month_avg": "10.63",
-    "month_start": "",
-    "month_dates": [],
-    "month_values": []*/
 
 
 module.exports = {
     aggregate: function() {
-        start =  new Date.now();
+
+        var sender = {
+            day_avg: "",
+            day_start: "",
+            day_dates: [],
+            day_values: [],
+            week_avg: '',
+            week_start: "",
+            week_dates: [],
+            week_values: [],
+            month_avg: "",
+            month_start: "",
+            month_dates: [],
+            month_values: []
+        };
+
+        start =  moment().utc();
+
         updateData(function(){});
 
+        //console.log(sender.toString());
+
+        Sender.create(sender).exec(function createCB(err,created) {
+            console.log(created);
+        });
     }
 }
