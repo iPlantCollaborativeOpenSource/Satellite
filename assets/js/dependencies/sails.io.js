@@ -229,7 +229,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
      * 
      * The request queue is used to simplify app-level connection logic--
      * i.e. so you don't have to wait for the socket to be connected
-     * to start trying to  synchronize data.
+     * to startTime trying to  synchronize data.
      * 
      * @api private
      * @param  {Socket}  socket

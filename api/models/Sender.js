@@ -2,9 +2,9 @@ module.exports = {
 
    attributes: {
 //        day_avg: "",
-        day_start: {
-            type: "string"
-        }
+//        day_start: {
+//            type: "string"
+//        }
 //        day_dates: [],
 //        day_values: [],
 //        week_avg: "",

@@ -1,31 +1,30 @@
 var request = require("request");
 var moment = require("moment");
 
-var start;
+var startTime;
 var sender;
 
-// TODO set up day data
 // iterate through DB for all data up to 1 day ago
 
-    var updateData = function(cb){
+    var updateData = function(){
         var total = [];
 
-        var _date = new Date(start.clone().subtract(1, "hour").format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z');
+        var _date = new Date(startTime.clone().subtract(6, "hour").format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z');
+        var dateToString = _date.toString();
+        //Wed Nov 12 2014 03:13:19 GMT-0700 (MST)
+        //Wed Nov 12 2014 11:15:40 GMT-0700 (MST)
         StatusResult.count({
             //created less than an hour ago
-            //TODO
+            //TODO This keeps returning 0 results
             createdAt: {'>=': _date}
             //
         }).exec(function countCB(error, found){
             total = found;
         });
 
-       total.toString();
-        // TODO get hourly info
 
         takeHour(total);
 
-        //TODO Update Weekly and Monthly every day
 
         setDay();
         if(sender.day_values.length === 24){
@@ -33,14 +32,13 @@ var sender;
             setMonth();
         }
 
-        // TODO update Timestamp array
 
 
-        cb(true);
+        //cb(true);
 
-        setTimeout(updateData.bind(null, function(){}), 20000);
+        //setTimeout(updateData.bind(null, function(){}), 2000);
     }
-// TODO narrow down and count how many were 200
+
 
 
 var takeHour = function(array){
@@ -57,25 +55,24 @@ var takeHour = function(array){
 
 var setDay = function(){
     var day = sender.day_values;
-    var startDate = start.clone().subtract(24, 'hour').utc().format();
+    var startDate = startTime.clone().subtract(24, 'hour').utc().format();
     sender.day_start = startDate;
 
-    // TODO sender Myseriously turns into a string
+
     if (sender.day_values.length === 24) {
         sender.day_dates.shift();
         sender.day_values.shift();
     }
     sender.day_values.push(average(day,24));
-    sender.day_dates.push(start.utc().format());
+    sender.day_dates.push(startTime.utc().format());
 }
 
 //"month_dates": ["2014-02-28T04:43:00+00:00",
 
-// TODO set up week data
 
     var setWeek = function(){
         var day = sender.day_values;
-        var startDate = start.clone().subtract(7, 'day').utc().format();
+        var startDate = startTime.clone().subtract(7, 'day').utc().format();
         sender.week_start = startDate;
 
         if (sender.week_values.length === 7) {
@@ -83,13 +80,13 @@ var setDay = function(){
             sender.week_dates.shift();
         }
         sender.week_values.push(average(day, 7));
-        sender.week_dates.push(start.utc().format());
+        sender.week_dates.push(startTime.utc().format());
     }
 
-// TODO set up month data
+
     var setMonth = function(){
         var day = sender.day_values;
-        var startDate = start.clone().subtract(30, 'day').utc().format();
+        var startDate = startTime.clone().subtract(30, 'day').utc().format();
         sender.month_start = startDate;
 
         if (sender.month_values.length === 30) {
@@ -97,7 +94,7 @@ var setDay = function(){
             sender.month_dates.shift();
         }
         sender.month_values.push(average(day, 30));
-        sender.month_dates.push(start.utc().format());
+        sender.month_dates.push(startTime.utc().format());
     }
 
 // calculate any average given an aray
@@ -129,6 +126,17 @@ var setDay = function(){
         }
     }
 
+    var send = function(){
+
+        updateData();
+
+        Sender.create(sender).exec(function createCB(err,created) {
+            console.log(created);
+        });
+
+        setTimeout(send.bind(null), 2000);
+    }
+
 
 module.exports = {
     aggregate: function() {
@@ -149,14 +157,13 @@ module.exports = {
             month_values: []
         };
 
-        start =  moment().utc();
+        startTime =  moment();
 
-        updateData(function(){});
+        send();
+        //updateData(function(){});
 
         //console.log(sender.toString());
 
-        Sender.create(sender).exec(function createCB(err,created) {
-            console.log(created);
-        });
+
     }
 }

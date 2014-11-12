@@ -5,7 +5,7 @@ var moment = require("moment");
 
 
 var check = function(url, poll, cb){
-    //var start = moment();
+    //var startTime = moment();
 
     request({
         url: url,
