@@ -24,7 +24,7 @@ var check = function(url, poll, cb){
         StatusResult.create({url: url, status:response.statusCode}).exec(function createCB(err,created){
             // TODO: save info with url as key (or nickname as key)
             // this is to manage multiple services
-            console.log(created);
+            //console.log(created);
         })
 
         if(response.statusCode === "200"){
