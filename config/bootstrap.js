@@ -10,13 +10,13 @@
  */
 
 module.exports.bootstrap = function(cb) {
-    //watcher5.watch("https://atmobeta.iplantc.org", 5000);
-    watcher5.watch("https://atmo.iplantcollaborative.org/login/", 5000);
+    watcher5.watch("https://atmobeta.iplantc.org", 5000);
+    //watcher5.watch("https://atmo.iplantcollaborative.org/login/", 5000);
     //aggregator.aggregate("https://atmo.iplantcollaborative.org");
 
 
     //TODO call reporting service every hour
-    setTimeout(aggregator.aggregate(), 10000);
+    setTimeout(aggregator.aggregate(), 20000);
 
 
 
